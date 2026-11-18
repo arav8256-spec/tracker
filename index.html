@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MISSION 2026-2027: Master Government Exam Preparation Tracker</title>
+  
+  <!-- Modern Inter & JetBrains Mono Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-dark">
+
+  <!-- Background Ambient Glows -->
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- Main App Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-section">
+        <div class="brand-logo">🎯</div>
+        <div class="brand-text">
+          <h1>MISSION 2026-2027</h1>
+          <div class="subtag">Master Government Exam To-Do &amp; Progress Tracker</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="themeToggleBtn" class="btn btn-secondary btn-icon-only" title="Toggle Dark/Light Mode">
+          <span id="themeIcon">☀️</span>
+        </button>
+        <button id="exportBtn" class="btn btn-secondary btn-sm" title="Backup all your progress to JSON">
+          <span>💾</span> Export
+        </button>
+        <button id="importBtn" class="btn btn-secondary btn-sm" title="Restore progress from JSON">
+          <span>📥</span> Import
+        </button>
+        <input type="file" id="importFileInput" accept=".json" style="display: none;">
+        <button id="printBtn" class="btn btn-secondary btn-sm" title="Print Progress Report">
+          <span>🖨️</span> Print
+        </button>
+        <button id="resetBtn" class="btn btn-secondary btn-sm" style="color: #ef4444;" title="Reset Progress">
+          <span>🔄</span> Reset
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Navigation Tabs -->
+  <nav class="nav-tabs-wrapper">
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab active" data-tab="tab-progress">
+        <span>📊</span> Subject Progress <span class="badge" id="badgeOverallPct">0%</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-daily">
+        <span>🎯</span> Daily Targets <span class="badge" id="badgeDailyTasksCount">0/0 Done</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-timetable">
+        <span>⏰</span> Daily Timetable <span class="badge" id="badgeTimetableStudyHrs">0h Planned</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-todo">
+        <span>📋</span> Master Syllabus <span class="badge" id="badgeLectureCount">0/1,345</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-mocks">
+        <span>📝</span> Mock Tests &amp; PYQs <span class="badge" id="badgeMockCount">0/1,243</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-motivation">
+        <span>✨</span> Motivation &amp; Ranks <span class="badge">Rank 1</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Application Body -->
+  <main class="app-main">
+
+    <!-- GLOBAL HERO DASHBOARD: OVERALL PROGRESS -->
+    <section class="hero-dashboard">
+      <div class="hero-stats-card">
+        <div class="target-badge-row">
+          <div class="target-badge">
+            <span>🗓️</span> <strong>Target Timeline:</strong> 20 May 2026 – June 2027
+          </div>
+          <div class="target-countdown" id="targetCountdown">
+            <span>⏳</span> Calculating remaining time...
+          </div>
+        </div>
+
+        <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 0.35rem;">Syllabus Mastery Command Center</h2>
+        <p style="color: var(--text-secondary); font-size: 0.85rem;">
+          Track all 1,345 individual lectures across 18 subjects with 4-stage milestones (Watch, Notes, Revision, Practice) &amp; 1,243 exam mock papers.
+        </p>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-label">Overall Completion</span>
+            <span class="stat-value" id="statOverallPct" style="color: #818cf8;">0%</span>
+            <span class="stat-sub" id="statStagesDone">0 / 5,380 stages</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-label">Lectures Watched</span>
+            <span class="stat-value" id="statLecturesDone" style="color: #38bdf8;">0</span>
+            <span class="stat-sub" id="statTotalLecturesSub">of 1,345 individual lectures</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-label">Notes Made</span>
+            <span class="stat-value" id="statNotesDone" style="color: #34d399;">0</span>
+            <span class="stat-sub" id="statTotalNotesSub">of 1,345 completed</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-label">Revisions</span>
+            <span class="stat-value" id="statRevisionDone" style="color: #fbbf24;">0</span>
+            <span class="stat-sub">cycles finished</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-label">Questions Solved</span>
+            <span class="stat-value" id="statQuestionsDone" style="color: #f472b6;">0</span>
+            <span class="stat-sub">sets practiced</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-label">Mocks Logged</span>
+            <span class="stat-value" id="statMocksAttempted" style="color: #c084fc;">0</span>
+            <span class="stat-sub">of 1,243 test papers</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Radial Progress Ring -->
+      <div class="hero-progress-ring-card">
+        <div class="progress-ring-container">
+          <svg class="progress-ring" viewBox="0 0 160 160">
+            <circle class="progress-ring-circle-bg" cx="80" cy="80" r="74"></circle>
+            <circle id="radialProgressCircle" class="progress-ring-circle" cx="80" cy="80" r="74"></circle>
+          </svg>
+          <div class="progress-ring-text">
+            <span class="progress-percent-large" id="radialProgressText">0%</span>
+            <span class="progress-ring-label">SYLLABUS DONE</span>
+          </div>
+        </div>
+
+        <div class="aspirant-rank-badge" id="aspirantRankBadge">
+          🌱 Step 1: Aspirant Kickoff
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 1: SUBJECT PROGRESS (18 SUBJECTS)
+         ===================================================================== -->
+    <div id="tab-progress" class="tab-pane active">
+      <div class="section-header">
+        <div>
+          <div class="section-title">
+            <span>📊</span> Subject-Wise Progress Tracker
+          </div>
+          <div class="section-subtitle">
+            Live completion percentages calculated across all 18 subjects and 1,345 individual lectures.
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <select id="subjectCategoryFilter" class="filter-select">
+            <option value="ALL">All Categories (18 Subjects)</option>
+            <option value="English">English</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="Reasoning">Reasoning</option>
+            <option value="Science">Science</option>
+            <option value="General Studies">General Studies</option>
+            <option value="Languages">Languages</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="subject-grid" id="subjectCardsGrid">
+        <!-- Rendered dynamically for all 18 subjects -->
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         TAB 2: DAILY TARGETS (WORK TASKS & RANDOM ADDITIONS - NO PRE-DEFINED TASKS)
+         ===================================================================== -->
+    <div id="tab-daily" class="tab-pane">
+      <div class="section-header">
+        <div>
+          <div class="section-title">
+            <span>🎯</span> Daily Target Creator &amp; Task Manager
+          </div>
+          <div class="section-subtitle">
+            Add your daily work tasks, study targets, or random to-dos. Fully customizable on a daily basis with direct subject progress linking.
+          </div>
+        </div>
+
+        <!-- Date Navigation Controls -->
+        <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+          <button id="dtPrevDayBtn" class="btn btn-secondary btn-sm" title="Previous Day">◀</button>
+          <input type="date" id="dailyTaskDatePicker" class="filter-select" style="font-family: var(--font-mono); font-weight: 700;">
+          <button id="dtNextDayBtn" class="btn btn-secondary btn-sm" title="Next Day">▶</button>
+          <button id="todayDateBtn" class="btn btn-secondary btn-sm">Today</button>
+        </div>
+      </div>
+
+      <div class="daily-tasks-layout">
+        <!-- Left: Target Creator + Daily Target List -->
+        <div>
+          <!-- Target Creator Card -->
+          <div class="daily-creator-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <h3 style="font-size: 1.05rem; font-weight: 800;">
+                Add Target for <span id="targetDayName" style="color: var(--primary);">Today</span>
+              </h3>
+              <span style="font-size: 0.75rem; color: #34d399; font-weight: 700;">⚡ No Pre-defined Tasks</span>
+            </div>
+
+            <!-- Two Clean Task Modes as Requested -->
+            <div class="creator-mode-tabs">
+              <button class="creator-mode-btn active" id="btnModeWorkStudy" data-mode="workstudy">
+                💼 Work / Study Task
+              </button>
+              <button class="creator-mode-btn" id="btnModeRandom" data-mode="random">
+                ⚡ Random Addition
+              </button>
+            </div>
+
+            <!-- MODE 1: WORK & STUDY TASK FORM -->
+            <form id="workStudyTaskForm" class="creator-form">
+              <div class="creator-form-grid">
+                <div class="form-group" style="grid-column: span 2;">
+                  <label class="form-label">Task Description</label>
+                  <input type="text" id="dtWorkStudyTitle" class="form-control" placeholder="e.g. Office work: complete audit report OR Current Affairs Lecture 12 watch" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Category</label>
+                  <select id="dtWorkStudyCategory" class="form-control">
+                    <option value="work">💼 Work Task</option>
+                    <option value="study">📖 Study Target</option>
+                    <option value="coaching">🏫 Coaching</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Link to Subject (Optional)</label>
+                  <select id="dtWorkStudySubject" class="form-control">
+                    <option value="">None / General Work</option>
+                    <!-- Populated dynamically with all 18 subjects -->
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Estimated Time</label>
+                  <input type="text" id="dtWorkStudyHours" class="form-control" placeholder="e.g. 1.5 hrs">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Priority</label>
+                  <select id="dtWorkStudyPriority" class="form-control">
+                    <option value="high">High Priority 🔥</option>
+                    <option value="urgent">Urgent ⚡</option>
+                    <option value="normal" selected>Normal 👍</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Subject Link Preview Box (if study subject is selected) -->
+              <div class="subject-link-preview-box" id="subjectLinkPreviewBox" style="display: none; margin-bottom: 1rem;">
+                <div>
+                  <strong>Selected Subject:</strong> <span id="prevSubjectName">Current Affairs</span>
+                </div>
+                <div>
+                  <strong>Current:</strong> <span id="prevCurrentPct" style="color: #38bdf8;">0.0%</span>
+                  ➔ <strong>Projected:</strong> <span id="prevProjectedPct" style="color: #34d399;">0.0%</span>
+                  (<span id="prevGainPct" style="color: #fbbf24; font-weight: 800;">+0.0%</span> gain)
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <span>➕</span> Add Work / Study Target
+              </button>
+            </form>
+
+            <!-- MODE 2: RANDOM ADDITION FORM -->
+            <form id="randomTaskForm" class="creator-form" style="display: none;">
+              <div class="creator-form-grid">
+                <div class="form-group" style="grid-column: span 2;">
+                  <label class="form-label">Random Task / To-Do</label>
+                  <input type="text" id="dtRandomTitle" class="form-control" placeholder="e.g. Buy notebooks & pens, Doctor visit at 5pm, 30 mins walk" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Category</label>
+                  <select id="dtRandomCategory" class="form-control">
+                    <option value="personal">🏠 Personal</option>
+                    <option value="health">🏃 Health / Fitness</option>
+                    <option value="errand">🛒 Errand / Shopping</option>
+                    <option value="finance">💳 Finance / Bills</option>
+                    <option value="random" selected>⚡ Random To-Do</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Priority</label>
+                  <select id="dtRandomPriority" class="form-control">
+                    <option value="normal" selected>Normal 👍</option>
+                    <option value="high">High Priority 🔥</option>
+                    <option value="low">Low Priority 💤</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <span>➕</span> Add Random Task
+              </button>
+            </form>
+          </div>
+
+          <!-- Daily Targets List Controls -->
+          <div class="controls-card" style="margin-bottom: 1rem; padding: 0.85rem 1.25rem;">
+            <div class="controls-row">
+              <div style="font-weight: 700; font-size: 0.95rem;">
+                <span id="selectedDateLabel">Today's Targets</span>: <span id="dailyTasksSummaryText" style="color: var(--primary);">0 of 0 Completed</span>
+              </div>
+              <div class="filter-chips">
+                <button class="filter-chip active" data-daily-filter="ALL">All</button>
+                <button class="filter-chip" data-daily-filter="WORK">Work 💼</button>
+                <button class="filter-chip" data-daily-filter="STUDY">Study 📖</button>
+                <button class="filter-chip" data-daily-filter="RANDOM">Random ⚡</button>
+                <button class="filter-chip" data-daily-filter="PENDING">Pending</button>
+                <button class="filter-chip" data-daily-filter="COMPLETED">Completed</button>
+                <button id="clearCompletedDailyTasksBtn" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Clear Done</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Daily Tasks Container -->
+          <div class="daily-tasks-container" id="dailyTasksList">
+            <!-- Dynamically populated or clean empty state -->
+          </div>
+        </div>
+
+        <!-- Right: Progress Impact & Streak Widget -->
+        <div class="daily-sidebar-widget">
+          <div class="daily-streak-badge">
+            <span class="streak-flame">🔥</span>
+            <div>
+              <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em;">Consistency Streak</div>
+              <div id="dailyStreakCount">0 Day Streak!</div>
+            </div>
+          </div>
+
+          <!-- Circular Daily Target Progress Gauge -->
+          <div class="daily-gauge-area">
+            <div class="progress-ring-container" style="width: 140px; height: 140px; margin-bottom: 0.5rem;">
+              <svg width="140" height="140" viewBox="0 0 140 140">
+                <circle cx="70" cy="70" r="56" fill="transparent" stroke="var(--bg-input)" stroke-width="10"></circle>
+                <circle id="dailyProgressRingCircle" class="progress-ring-circle" cx="70" cy="70" r="56" fill="transparent"
+                        stroke="#10b981" stroke-width="10" stroke-dasharray="352" stroke-dashoffset="352" stroke-linecap="round"></circle>
+              </svg>
+              <div class="progress-ring-text">
+                <span class="progress-percent-large" id="dailyProgressRingText" style="font-size: 1.75rem; color: #34d399;">0%</span>
+                <span class="progress-ring-label" style="font-size: 0.65rem;">TODAY</span>
+              </div>
+            </div>
+            <div id="dailyCompletionStatusMsg" style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-top: 0.5rem;">
+              No targets scheduled for this date yet.
+            </div>
+          </div>
+
+          <!-- Today's Subject Progress Gains Log -->
+          <div style="background: var(--bg-input); border-radius: var(--radius-md); padding: 1rem; border: 1px solid var(--border-subtle);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span style="font-weight: 800; font-size: 0.85rem; color: var(--text-primary);">📈 Today's Subject Gains</span>
+              <span style="font-size: 0.7rem; color: #34d399; font-weight: 700;">Direct Link</span>
+            </div>
+            <div id="todaySubjectGainsList" class="today-gains-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div style="background: var(--bg-input); border-radius: var(--radius-md); padding: 1rem; border: 1px solid var(--border-subtle);">
+            <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem;">💡 Fast Actions</div>
+            <button id="copyYesterdayPendingBtn" class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 0.5rem; justify-content: flex-start;">
+              <span>📋</span> Copy Pending Tasks from Yesterday
+            </button>
+            <button id="clearAllDateTargetsBtn" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start; color: #ef4444;">
+              <span>🗑️</span> Clear All Targets for this Date
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         TAB 3: DAILY TIMETABLE (CUSTOMIZABLE ON DAILY BASIS - NO PRE-DEFINED TASKS)
+         ===================================================================== -->
+    <div id="tab-timetable" class="tab-pane">
+      <div class="timetable-container">
+        <!-- Left: Visual Daily Timeline & Builder -->
+        <div class="timeline-card">
+          <div class="section-header" style="margin-bottom: 0.75rem;">
+            <div>
+              <div class="section-title">
+                <span>⏰</span> Daily Timetable Preparation &amp; Scheduler
+              </div>
+              <div class="section-subtitle">
+                Customize your daily schedule slots for any specific day. Starts clean with no pre-defined tasks.
+              </div>
+            </div>
+
+            <div class="live-time-indicator" id="liveTimeClock">
+              <span>🟢</span> Live Clock: --:--:--
+            </div>
+          </div>
+
+          <!-- Date Navigation Bar for Timetable -->
+          <div style="display: flex; gap: 0.4rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
+            <button id="ttPrevDayBtn" class="btn btn-secondary btn-sm" title="Previous Day">◀</button>
+            <input type="date" id="ttDatePicker" class="filter-select" style="font-family: var(--font-mono); font-weight: 700;">
+            <button id="ttNextDayBtn" class="btn btn-secondary btn-sm" title="Next Day">▶</button>
+            <button id="ttTodayBtn" class="btn btn-secondary btn-sm">Today</button>
+            <span id="ttDayTitle" style="font-weight: 700; font-size: 0.9rem; margin-left: 0.5rem; color: var(--primary);">Schedule for Today</span>
+          </div>
+
+          <!-- Timetable Builder Toolbar -->
+          <div class="timetable-builder-bar">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <button id="openAddSlotModalBtn" class="btn btn-primary btn-sm">
+                <span>➕</span> Add Time Slot
+              </button>
+              <button id="copyYesterdayTimetableBtn" class="btn btn-secondary btn-sm" title="Copy schedule from previous day">
+                <span>📋</span> Copy from Yesterday
+              </button>
+              <button id="clearDateTimetableBtn" class="btn btn-secondary btn-sm" style="color: #ef4444;" title="Clear schedule for this date">
+                <span>🗑️</span> Clear Day
+              </button>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">
+              Total: <strong id="timetableSlotCount" style="color: var(--text-primary);">0</strong> Slots Planned
+            </div>
+          </div>
+
+          <!-- Timeline Slots List -->
+          <div class="timeline-list" id="timelineList">
+            <!-- Timeline items rendered dynamically or clean empty state -->
+          </div>
+        </div>
+
+        <!-- Right: Time Distribution Summary -->
+        <div class="routine-summary-card">
+          <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem;">Daily Hours Allocation</h3>
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+            Calculated dynamically from your customized timetable for this date:
+          </p>
+
+          <div class="breakdown-bars-list">
+            <div>
+              <div class="breakdown-item-header">
+                <span>📖 Focused Study</span>
+                <span id="statTimetableStudyHrs" style="color: #34d399; font-weight: 800;">0.0 Hours (0%)</span>
+              </div>
+              <div class="progress-track">
+                <div id="fillTimetableStudy" class="progress-fill" style="width: 0%; background: #10b981;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="breakdown-item-header">
+                <span>💼 Work</span>
+                <span id="statTimetableWorkHrs" style="color: #fbbf24; font-weight: 800;">0.0 Hours (0%)</span>
+              </div>
+              <div class="progress-track">
+                <div id="fillTimetableWork" class="progress-fill" style="width: 0%; background: #f59e0b;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="breakdown-item-header">
+                <span>🏫 Coaching</span>
+                <span id="statTimetableCoachingHrs" style="color: #f472b6; font-weight: 800;">0.0 Hours (0%)</span>
+              </div>
+              <div class="progress-track">
+                <div id="fillTimetableCoaching" class="progress-fill" style="width: 0%; background: #ec4899;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="breakdown-item-header">
+                <span>😴 Sleep, Rest &amp; Personal</span>
+                <span id="statTimetableRestHrs" style="color: #a5b4fc; font-weight: 800;">0.0 Hours (0%)</span>
+              </div>
+              <div class="progress-track">
+                <div id="fillTimetableRest" class="progress-fill" style="width: 0%; background: #6366f1;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="important-box" style="margin-top: 1.5rem;">
+            <h4>DAILY DISCIPLINE RULE</h4>
+            <p>
+              Your schedule is flexible and under your full control. Customize each day based on your work demands and study priorities.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         TAB 4: MASTER SYLLABUS (1,345 INDIVIDUAL LECTURES, 4 MILESTONES)
+         ===================================================================== -->
+    <div id="tab-todo" class="tab-pane">
+      <div class="section-header">
+        <div>
+          <div class="section-title">
+            <span>📋</span> Master Syllabus Checklist
+          </div>
+          <div class="section-subtitle">
+            All 1,345 individual numbered lectures listed with 4 milestone stages (Watched, Notes, Revision, Question).
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+          <input type="text" id="todoSearchInput" class="filter-select" placeholder="🔍 Search lecture or topic..." style="min-width: 200px;">
+          <select id="todoSubjectFilter" class="filter-select">
+            <!-- Populated dynamically with all 18 subjects -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Controls & Quick Actions Bar -->
+      <div class="controls-card">
+        <div class="controls-row">
+          <div class="filter-chips">
+            <button class="filter-chip active" data-filter="ALL">All Lectures</button>
+            <button class="filter-chip" data-filter="DONE">Fully Done (4/4)</button>
+            <button class="filter-chip" data-filter="IN_PROGRESS">In Progress</button>
+            <button class="filter-chip" data-filter="UNSTARTED">Unstarted</button>
+          </div>
+
+          <div class="batch-actions">
+            <button id="markAllVisibleDoneBtn" class="btn btn-secondary btn-sm" title="Mark all filtered rows as complete">
+              <span>✓✓</span> Mark Visible Done
+            </button>
+            <button id="resetAllVisibleBtn" class="btn btn-secondary btn-sm" title="Clear all marks on visible rows">
+              <span>↺</span> Reset Visible
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Table -->
+      <div class="table-wrapper">
+        <table class="todo-table">
+          <thead>
+            <tr>
+              <th style="width: 65px;">S.No</th>
+              <th>Lecture &amp; Topic Details</th>
+              <th style="width: 90px; text-align: center;">Watched</th>
+              <th style="width: 90px; text-align: center;">Notes</th>
+              <th style="width: 90px; text-align: center;">Revision</th>
+              <th style="width: 90px; text-align: center;">Question</th>
+              <th style="width: 100px; text-align: center;">Status</th>
+              <th style="width: 130px; text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="todoTableBody">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="pagination-controls">
+        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+          Showing <strong id="visibleRowCount">1,345</strong> of <strong id="totalMasterLecturesCount">1,345</strong> lectures (<span id="visiblePct">0%</span> completed)
+        </div>
+        <div class="page-nav-btns">
+          <button id="prevPageBtn" class="btn btn-secondary btn-sm">◀ Previous</button>
+          <span style="font-size: 0.85rem; font-weight: 700; padding: 0 0.5rem;">
+            Page <span id="currentPageNum">1</span> / <span id="totalPagesNum">27</span>
+          </span>
+          <button id="nextPageBtn" class="btn btn-secondary btn-sm">Next ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         TAB 5: MOCK TESTS & PYQS (15 EXAM STREAMS - 1,243 PAPERS)
+         ===================================================================== -->
+    <div id="tab-mocks" class="tab-pane">
+      <div class="section-header">
+        <div>
+          <div class="section-title">
+            <span>📝</span> Mock Tests &amp; Previous Year Papers Tracker
+          </div>
+          <div class="section-subtitle">
+            15 examination streams (1,243 total mock papers) with 3-attempt mark tracking and test dates.
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <input type="text" id="mockSearchInput" class="filter-select" placeholder="🔍 Search paper name..." style="min-width: 180px;">
+        </div>
+      </div>
+
+      <!-- Stream Selector Tabs -->
+      <div class="mock-series-tabs" id="mockSeriesTabs">
+        <!-- Rendered dynamically for 15 streams -->
+      </div>
+
+      <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; color: #38bdf8;" id="mockSeriesInfo">
+        Loading test papers...
+      </div>
+
+      <!-- Papers Grid -->
+      <div class="mock-papers-grid" id="mockPapersGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         TAB 6: MOTIVATION & ASPIRANT RANKS (CLEAN - SLOGAN REMOVED)
+         ===================================================================== -->
+    <div id="tab-motivation" class="tab-pane">
+      <div style="max-width: 800px; margin: 0 auto; text-align: center; padding: 2rem 1rem;">
+        
+        <div style="display: inline-block; padding: 0.5rem 1.5rem; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: var(--radius-full); color: #818cf8; font-weight: 800; font-size: 0.9rem; margin-bottom: 1.5rem;">
+          CONSISTENCY COMPOUNDS DAILY
+        </div>
+
+        <h2 style="font-size: 2.5rem; font-weight: 900; line-height: 1.2; margin-bottom: 1rem; background: linear-gradient(135deg, #a5b4fc 0%, #ffffff 50%, #34d399 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          SYLLABUS MASTERY &amp; RANK ACHIEVEMENTS
+        </h2>
+
+        <p style="font-size: 1.05rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 2rem;">
+          Every single completed lecture, note, revision, and question practice directly accelerates your preparation.
+        </p>
+
+        <!-- Aspirant Milestone Trophies -->
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem;">Aspirant Milestones &amp; Ranks</h3>
+        <div class="stats-grid" id="trophiesGrid">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- =====================================================================
+       TIMETABLE SLOT EDITOR MODAL (ADD / EDIT DAILY SLOT)
+       ===================================================================== -->
+  <div class="modal-overlay" id="slotEditorModal">
+    <div class="modal-card" style="max-width: 480px; text-align: left;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 id="slotModalTitle" style="font-size: 1.2rem; font-weight: 800;">Add Daily Timetable Slot</h3>
+        <button id="closeSlotModalBtn" style="background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer;">✕</button>
+      </div>
+
+      <form id="slotEditorForm">
+        <input type="hidden" id="editSlotId" value="">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+          <div class="form-group">
+            <label class="form-label">Start Time</label>
+            <input type="text" id="slotStartTime" class="form-control" placeholder="06:00" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">End Time</label>
+            <input type="text" id="slotEndTime" class="form-control" placeholder="09:30" required>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0.75rem;">
+          <label class="form-label">Activity Name</label>
+          <input type="text" id="slotLabel" class="form-control" placeholder="e.g. Work Shift, Current Affairs, Math Practice" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="slotCategory" class="form-control">
+              <option value="study">📖 Study</option>
+              <option value="work">💼 Work</option>
+              <option value="coaching">🏫 Coaching</option>
+              <option value="rest">☕ Rest / Breaks</option>
+              <option value="sleep">😴 Sleep</option>
+              <option value="personal">🏃 Personal / Health</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Icon Emoji</label>
+            <input type="text" id="slotIcon" class="form-control" value="⚡" maxlength="4">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0.75rem;">
+          <label class="form-label">Assigned Focus Subject (Optional)</label>
+          <select id="slotAssignedSubject" class="form-control">
+            <option value="">None / General</option>
+            <!-- Filled dynamically with 18 subjects -->
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label">Description / Guidance</label>
+          <input type="text" id="slotDesc" class="form-control" placeholder="e.g. Focused video watch & formula notes">
+        </div>
+
+        <div style="display: flex; gap: 0.75rem;">
+          <button type="button" class="btn btn-secondary" id="cancelSlotModalBtn" style="flex: 1;">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="flex: 1;">Save Time Slot</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Celebration Modal Popup -->
+  <div class="modal-overlay" id="celebrationModal">
+    <div class="modal-card">
+      <div class="celebration-art">🎉 🎯 💯</div>
+      <div class="celebration-title" id="celebrationTitle">INCREDIBLE WORK!</div>
+      <p id="celebrationMsg" style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">
+        You've completed another huge milestone! Outstanding discipline and consistency.
+      </p>
+      <button class="btn btn-primary" id="closeCelebrationBtn" style="width: 100%;">
+        Keep Going! 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- Reset Confirmation Modal -->
+  <div class="modal-overlay" id="resetConfirmModal">
+    <div class="modal-card" style="max-width: 420px;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⚠️</div>
+      <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.75rem;">Reset All Progress?</h3>
+      <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem;">
+        This will clear all your checked lectures, notes, revisions, question marks, custom daily timetables, and mock scores. You can export a backup first before resetting.
+      </p>
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn btn-secondary" id="cancelResetBtn" style="flex: 1;">Cancel</button>
+        <button class="btn btn-primary" id="confirmResetBtn" style="flex: 1; background: #ef4444; border-color: #ef4444;">Yes, Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" style="position: fixed; bottom: 20px; right: 20px; background: var(--bg-card-hover); border: 1px solid var(--border-color); color: var(--text-primary); padding: 0.75rem 1.25rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); display: none; z-index: 2000; font-size: 0.85rem; font-weight: 600;">
+    Notification
+  </div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
